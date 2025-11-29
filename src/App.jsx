@@ -13,28 +13,31 @@ import {
   LogOut, 
   CheckCircle,
   Award,
-  Mic,
-  FileText,
-  CheckSquare,
+  Mic, 
+  FileText, 
+  CheckSquare, 
   XCircle,
-  PlusCircle,
-  AlertCircle,
-  Trophy,
-  Gift,
-  TrendingUp,
-  Zap,
-  Shield,
-  QrCode,
-  Briefcase,
-  Hand,
-  Tag,
-  Monitor,
-  Printer,
-  Armchair,
-  LayoutGrid,
+  PlusCircle, 
+  AlertCircle, 
+  Trophy, 
+  Gift, 
+  TrendingUp, 
+  Zap, 
+  Shield, 
+  QrCode, 
+  Briefcase, 
+  Hand, 
+  Tag, 
+  Monitor, 
+  Printer, 
+  Armchair, 
+  LayoutGrid, 
   Megaphone,
-  Bot, // Added Bot icon
-  Send // Added Send icon
+  Bot,
+  Send,
+  ChevronLeft,
+  ChevronRight,
+  Plus
 } from 'lucide-react';
 
 // --- MOCK DATA ---
@@ -81,7 +84,21 @@ const INITIAL_EVENTS = [
   { id: 102, title: 'Hackathon Kickoff', time: '12:00 PM - 01:00 PM', type: 'event', location: 'Auditorium', date: 'Today', description: '24hr hackathon start', createdBy: 'f1', status: 'upcoming' },
 ];
 
-// --- NEW RESOURCE DATA STRUCTURES ---
+// --- CALENDAR DATA ---
+
+const INITIAL_CALENDAR_EVENTS = [
+  { id: 1, title: 'Diwali Holiday', date: '2024-11-01', type: 'holiday' },
+  { id: 2, title: 'Bhai Dooj', date: '2024-11-03', type: 'holiday' },
+  { id: 3, title: 'CS Midsem: DBMS', date: '2024-11-12', type: 'exam' },
+  { id: 4, title: 'CS Midsem: TOC', date: '2024-11-14', type: 'exam' },
+  { id: 5, title: 'CS Midsem: OS', date: '2024-11-16', type: 'exam' },
+  { id: 6, title: 'Smart India Hackathon', date: '2024-11-20', type: 'hackathon' },
+  { id: 7, title: 'End Sem Prep Leave', date: '2024-12-05', type: 'academic' },
+  { id: 8, title: 'CS Endsem: Final Project', date: '2024-12-10', type: 'exam' },
+  { id: 9, title: 'Winter Break Starts', date: '2024-12-25', type: 'holiday' },
+];
+
+// --- RESOURCE DATA STRUCTURES ---
 
 const INITIAL_BOOKS = [
   { id: 'b1', title: 'Introduction to Algorithms', author: 'Cormen', qty: 5, image: '📚' },
@@ -94,11 +111,6 @@ const INITIAL_BOOKS = [
   { id: 'b8', title: 'Operating System Concepts', author: 'Silberschatz', qty: 3, image: '⚙️' },
   { id: 'b9', title: 'Deep Learning', author: 'Ian Goodfellow', qty: 2, image: '🧠' },
   { id: 'b10', title: 'React Up & Running', author: 'Stoyan Stefanov', qty: 5, image: '⚛️' },
-  { id: 'b11', title: 'JavaScript: The Good Parts', author: 'Douglas Crockford', qty: 4, image: '📜' },
-  { id: 'b12', title: 'Head First Java', author: 'Kathy Sierra', qty: 7, image: '☕' },
-  { id: 'b13', title: 'Python Crash Course', author: 'Eric Matthes', qty: 6, image: '🐍' },
-  { id: 'b14', title: 'Cracking the Coding Interview', author: 'Gayle Laakmann', qty: 8, image: '💼' },
-  { id: 'b15', title: 'You Don\'t Know JS', author: 'Kyle Simpson', qty: 3, image: '❓' },
 ];
 
 const INITIAL_LAB_EQUIPMENT = [
@@ -176,6 +188,10 @@ const INITIAL_REDEMPTIONS = [
   { id: 'red1', item: 'Hostel WiFi Boost', cost: 50, status: 'approved', date: '2 days ago', studentName: 'Aarav Sharma' },
   { id: 'red2', item: '+2 Internal Marks', cost: 100, status: 'pending', date: 'Just now', studentName: 'Aarav Sharma' }
 ];
+
+// --- CALENDAR HELPER FUNCTIONS ---
+const getMonthDays = (year, month) => new Date(year, month + 1, 0).getDate();
+const getFirstDayOfMonth = (year, month) => new Date(year, month, 1).getDay();
 
 // --- COMPONENTS ---
 
@@ -357,6 +373,179 @@ const ChatAssistant = () => {
   );
 };
 
+// --- SCHEDULE VIEW COMPONENT (New) ---
+
+const ScheduleView = ({ user, events, onAddEvent }) => {
+  const [currentDate, setCurrentDate] = useState(new Date(2024, 10, 1)); // Default to Nov 2024
+  // REMOVED LOCAL EVENTS STATE: const [events, setEvents] = useState(INITIAL_CALENDAR_EVENTS);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newEventData, setNewEventData] = useState({ title: '', type: 'academic' });
+
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+  const daysInMonth = getMonthDays(year, month);
+  const firstDay = getFirstDayOfMonth(year, month);
+  const monthName = currentDate.toLocaleString('default', { month: 'long' });
+
+  const handlePrevMonth = () => setCurrentDate(new Date(year, month - 1, 1));
+  const handleNextMonth = () => setCurrentDate(new Date(year, month + 1, 1));
+
+  // Faculty: Handle Click on Date
+  const onDateClick = (day) => {
+    if (user.role === 'Faculty') {
+      const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      setSelectedDate(formattedDate);
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleAddEvent = (e) => {
+    e.preventDefault();
+    const newEvent = {
+      id: Date.now(),
+      title: newEventData.title,
+      type: newEventData.type,
+      date: selectedDate
+    };
+    onAddEvent(newEvent); // Use prop function instead of local state
+    setIsModalOpen(false);
+    setNewEventData({ title: '', type: 'academic' });
+  };
+
+  // Helper to get color based on event type
+  const getEventColor = (type) => {
+    switch(type) {
+      case 'exam': return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800';
+      case 'holiday': return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800';
+      case 'hackathon': return 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800';
+      case 'class': return 'bg-indigo-100 text-indigo-700 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800';
+      default: return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800';
+    }
+  };
+
+  // Generate Calendar Grid
+  const renderCalendarDays = () => {
+    const days = [];
+    
+    // Empty slots for padding
+    for (let i = 0; i < firstDay; i++) {
+      days.push(<div key={`empty-${i}`} className="h-28 bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100 dark:border-slate-700/50"></div>);
+    }
+
+    // Days of month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const dayEvents = events.filter(e => e.date === dateStr);
+      
+      days.push(
+        <div 
+          key={day} 
+          onClick={() => onDateClick(day)}
+          className={`h-28 border border-gray-100 dark:border-slate-700 p-2 overflow-y-auto transition-colors ${user.role === 'Faculty' ? 'hover:bg-indigo-50 dark:hover:bg-slate-700 cursor-pointer' : 'bg-white dark:bg-slate-800'}`}
+        >
+          <div className="flex justify-between items-start">
+             <span className={`text-sm font-semibold mb-1 w-6 h-6 flex items-center justify-center rounded-full ${new Date().getDate() === day && month === new Date().getMonth() ? 'bg-indigo-600 text-white' : 'text-gray-700 dark:text-gray-300'}`}>{day}</span>
+             {user.role === 'Faculty' && <Plus className="w-3 h-3 text-gray-300 opacity-0 group-hover:opacity-100" />}
+          </div>
+          <div className="space-y-1">
+            {dayEvents.map(evt => (
+              <div key={evt.id} className={`text-[10px] px-1.5 py-1 rounded border truncate font-medium ${getEventColor(evt.type)}`}>
+                {evt.title}
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    return days;
+  };
+
+  return (
+    <div className="animate-fade-in space-y-6">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
+            <Calendar className="w-6 h-6 text-indigo-600" /> Academic Calendar
+          </h2>
+          <p className="text-gray-500 text-sm">Computer Science Dept • Nov-Dec 2024</p>
+        </div>
+        <div className="flex items-center gap-4 mt-4 md:mt-0">
+          <div className="flex items-center bg-gray-100 dark:bg-slate-700 rounded-lg p-1">
+            <button onClick={handlePrevMonth} className="p-1 hover:bg-white dark:hover:bg-slate-600 rounded shadow-sm"><ChevronLeft className="w-5 h-5 text-gray-600 dark:text-gray-300" /></button>
+            <span className="px-4 font-bold text-gray-800 dark:text-white w-32 text-center">{monthName} {year}</span>
+            <button onClick={handleNextMonth} className="p-1 hover:bg-white dark:hover:bg-slate-600 rounded shadow-sm"><ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-300" /></button>
+          </div>
+          {user.role === 'Faculty' && <span className="text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded border border-indigo-100">Faculty Mode: Click date to add</span>}
+        </div>
+      </div>
+
+      {/* Grid Header */}
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden">
+        <div className="grid grid-cols-7 bg-gray-50 dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700">
+          {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+            <div key={day} className="py-2 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">{day}</div>
+          ))}
+        </div>
+        
+        {/* Calendar Grid */}
+        <div className="grid grid-cols-7">
+          {renderCalendarDays()}
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap gap-4 justify-center text-xs text-gray-600 dark:text-gray-400">
+         <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-red-100 border border-red-200"></div> Exam</div>
+         <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-emerald-100 border border-emerald-200"></div> Holiday</div>
+         <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-purple-100 border border-purple-200"></div> Hackathon</div>
+         <div className="flex items-center gap-1"><div className="w-3 h-3 rounded bg-blue-100 border border-blue-200"></div> General</div>
+      </div>
+
+      {/* Add Event Modal (Faculty Only) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-2xl w-full max-w-md animate-fade-in">
+             <h3 className="text-lg font-bold mb-4 dark:text-white">Add Event for {selectedDate}</h3>
+             <form onSubmit={handleAddEvent} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-300">Event Title</label>
+                  <input 
+                    autoFocus
+                    required 
+                    value={newEventData.title}
+                    onChange={(e) => setNewEventData({...newEventData, title: e.target.value})}
+                    className="w-full p-2 rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white" 
+                    placeholder="e.g. Extra Class, Viva" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-300">Type</label>
+                  <select 
+                    value={newEventData.type}
+                    onChange={(e) => setNewEventData({...newEventData, type: e.target.value})}
+                    className="w-full p-2 rounded border dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                  >
+                    <option value="academic">General Academic</option>
+                    <option value="exam">Exam / Test</option>
+                    <option value="holiday">Holiday</option>
+                    <option value="hackathon">Hackathon / Event</option>
+                  </select>
+                </div>
+                <div className="flex justify-end gap-3 pt-2">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg">Cancel</button>
+                  <button type="submit" className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Add to Calendar</button>
+                </div>
+             </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 export default function App() {
   const [allUsers, setAllUsers] = useState(INITIAL_USERS);
   const [user, setUser] = useState(null);
@@ -364,7 +553,10 @@ export default function App() {
   const [darkMode, setDarkMode] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [notification, setNotification] = useState(null);
-  
+   
+  // Calendar State Lifted to App
+  const [calendarEvents, setCalendarEvents] = useState(INITIAL_CALENDAR_EVENTS);
+
   // Resource States
   const [books, setBooks] = useState(INITIAL_BOOKS);
   const [equipment, setEquipment] = useState(INITIAL_LAB_EQUIPMENT);
@@ -837,8 +1029,8 @@ export default function App() {
                 </div>
               </div>
               <div>
-                 <label className="block text-sm font-medium mb-1 dark:text-gray-300">Description</label>
-                 <textarea required name="description" rows="3" className="w-full p-2.5 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Role details, event date, etc."></textarea>
+                  <label className="block text-sm font-medium mb-1 dark:text-gray-300">Description</label>
+                  <textarea required name="description" rows="3" className="w-full p-2.5 rounded-lg border dark:bg-slate-700 dark:border-slate-600 dark:text-white" placeholder="Role details, event date, etc."></textarea>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -961,31 +1153,31 @@ export default function App() {
           <div className="space-y-4">
             {filteredResources.length === 0 ? <p className="text-gray-500">No resource requests.</p> : filteredResources.map(resReq => (
               <div key={resReq.id} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm flex justify-between items-start">
-                 <div>
-                   <h4 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
-                     {resReq.type === 'Book' && '📚 Book Request'}
-                     {resReq.type === 'Equipment' && '💻 Equipment Request'}
-                     {resReq.type === 'Seat' && '🪑 Seat Reservation'}
-                     {resReq.type === 'Hall' && '🎤 Hall Proposal'}
-                   </h4>
-                   <p className="font-medium text-sm mt-1">{resReq.itemName}</p>
-                   <div className="text-xs text-gray-500 mt-1 space-y-1">
-                     <p>Requester: {resReq.requesterName}</p>
-                     {resReq.slot && <p>Slot: {resReq.slot}</p>}
-                     {resReq.seatNum && <p>Seat #{resReq.seatNum}</p>}
-                     {resReq.reason && <p className="italic">"{resReq.reason}"</p>}
-                   </div>
-                 </div>
-                 {resReq.status === 'pending' ? (
-                   <div className="flex gap-2">
-                     <button onClick={() => handleApproveResource(resReq)} className="px-3 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700">Accept</button>
-                     <button onClick={() => handleRejectResource(resReq.id)} className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Reject</button>
-                   </div>
-                 ) : (
-                   <span className={`text-xs font-bold uppercase ${resReq.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>
-                     {resReq.status}
-                   </span>
-                 )}
+                  <div>
+                    <h4 className="font-bold text-gray-800 dark:text-white flex items-center gap-2">
+                      {resReq.type === 'Book' && '📚 Book Request'}
+                      {resReq.type === 'Equipment' && '💻 Equipment Request'}
+                      {resReq.type === 'Seat' && '🪑 Seat Reservation'}
+                      {resReq.type === 'Hall' && '🎤 Hall Proposal'}
+                    </h4>
+                    <p className="font-medium text-sm mt-1">{resReq.itemName}</p>
+                    <div className="text-xs text-gray-500 mt-1 space-y-1">
+                      <p>Requester: {resReq.requesterName}</p>
+                      {resReq.slot && <p>Slot: {resReq.slot}</p>}
+                      {resReq.seatNum && <p>Seat #{resReq.seatNum}</p>}
+                      {resReq.reason && <p className="italic">"{resReq.reason}"</p>}
+                    </div>
+                  </div>
+                  {resReq.status === 'pending' ? (
+                    <div className="flex gap-2">
+                      <button onClick={() => handleApproveResource(resReq)} className="px-3 py-1 bg-emerald-600 text-white text-xs rounded hover:bg-emerald-700">Accept</button>
+                      <button onClick={() => handleRejectResource(resReq.id)} className="px-3 py-1 bg-red-600 text-white text-xs rounded hover:bg-red-700">Reject</button>
+                    </div>
+                  ) : (
+                    <span className={`text-xs font-bold uppercase ${resReq.status === 'approved' ? 'text-green-600' : 'text-red-600'}`}>
+                      {resReq.status}
+                    </span>
+                  )}
               </div>
             ))}
           </div>
@@ -1215,6 +1407,8 @@ export default function App() {
               {activeTab === 'gamification' && 'Campus Rewards & Points'}
               {activeTab === 'approvals' && 'Admin & Faculty Approvals'}
               {activeTab === 'connect' && 'Connect Hub'}
+              {activeTab === 'calendar' && 'Academic Calendar'}
+              {activeTab === 'resources' && 'Resource Management'}
             </h1>
             <div className="flex items-center gap-4">
                <div className="relative">
@@ -1306,17 +1500,19 @@ export default function App() {
                 </div>
               </div>
             )}
-            
+           
             {activeTab === 'gamification' && <GamificationView />}
-            
+           
             {activeTab === 'resources' && <ResourcesView />}
-            
+           
             {activeTab === 'calendar' && (
-              <div className="animate-fade-in bg-white dark:bg-slate-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-slate-700">
-                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Academic Calendar</h2>
-                 <p className="text-gray-500">Weekly schedule view coming soon. Check the dashboard for upcoming events.</p>
-              </div>
+              <ScheduleView 
+                user={user} 
+                events={calendarEvents} 
+                onAddEvent={(newEvent) => setCalendarEvents([...calendarEvents, newEvent])} 
+              />
             )}
+            
             {activeTab === 'my-requests' && (
                <div className="space-y-6 animate-fade-in">
                   <div className="flex justify-between items-center">
