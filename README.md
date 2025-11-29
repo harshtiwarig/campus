@@ -1,234 +1,175 @@
-<div align="center">🌐 C A M P U S   C O N N E C T</div>
-<div align="center">The Smart Campus OS — Built in 24 Hours</div>
-<div align="center"><a href="https://campus-sigma-olive.vercel.app/">🔗 Live Demo</a></div>
-🏆 <u>Project Overview</u>
+<div align="center">
 
-Campus Sigma is a next-generation Campus Operating System, created to unify every fragmented part of college life into ONE sleek, modern platform.
+<span style="font-size: 42px; font-weight: 900;">🌐 Campus Sigma</span>
+<span style="font-size: 20px;">A Unified Smart Campus Operating System (Built in 24 Hours)</span>
 
-Built during a 24-hour hackathon, it blends:
+🔗 Live Demo: https://campus-sigma-olive.vercel.app/
 
-🎯 real-time student services
+</div>
+<div align="center">
 
-🧭 resource optimization
 
-⚡ gamification
 
-🧑‍🏫 student–faculty workflow
 
-🤝 collaboration hubs
 
-🤖 AI assistance
 
-Mission: “Make campus life smarter, faster, and more connected—using a single digital ecosystem.”
 
-🧩 <u>Core Features</u>
-1️⃣ <span style="font-size: 26px;">Role-Based Dashboards</span>
-Modern 3-Layer Access Control System
-🧑‍🎓 Student Portal
 
-View schedules, grades & events
 
-Book library, lab devices, rooms
 
-Earn Campus Points 🎖
 
-Apply for opportunities via Connect Hub
 
-Submit event proposals
+</div>
+<span style="font-size: 32px;">📌 <u>Overview</u></span>
 
-👨‍🏫 Faculty Portal
+Campus Sigma is a modern, role-based, intelligent campus platform that replaces fragmented university systems with a single unified digital ecosystem.
 
-Approve/reject event proposals
+It centralizes:
 
-Approve resource bookings
+Campus communication
 
-Publish announcements
+Resource booking
 
-Create posts on the Campus Feed
+Student activities
 
-🛠️ Admin Portal
+Event & opportunity management
 
-System monitoring
+Leaderboards & rewards
 
-Resource management
+Faculty workflows
 
-Campus-wide analytics
+AI-powered campus assistance
 
-2️⃣ <span style="font-size: 26px;">Campus Points — The Gamification Engine</span>
+Goal: To redesign the campus experience with speed, clarity, collaboration & intelligence.
 
-Introducing a <u>fully dynamic rewards system</u> that boosts engagement!
+<span style="font-size: 32px;">🏆 <u>Key Features</u></span>
+<span style="font-size: 24px;">1️⃣ Role-Based Dashboards — Student, Faculty & Admin Portals</span>
 
-🎯 Earn Points For
+Dedicated UI for each role
+
+Personalized homepage
+
+Streamlined workflows
+
+Real-time updates
+
+<span style="font-size: 24px;">2️⃣ Campus Points — Gamified Engagement System</span>
+
+Students earn points for:
 
 Organizing events
 
-Working in labs
+Lab working hours
 
-Participating in extra activities
+Volunteering
 
-Department support
+Extra activities
 
-🎁 Redeem For
+Points can be redeemed for:
 
-Paid event passes
+🎫 Event passes
 
-Extra internal marks
+🧪 Lab priority slots
 
-Priority access perks
+📝 Internal marks
 
-📊 Leaderboard
+📶 WiFi boost
 
-All students ranked ✨publicly✨ — creating healthy competition + motivation.
+Leaderboard ranking keeps the campus competitive & fun.
 
-3️⃣ <span style="font-size: 26px;">Student → Faculty Event Proposal System</span>
+<span style="font-size: 24px;">3️⃣ Connect Hub — Find Opportunities, Hire Talent, Build Teams</span>
 
-A fast, clean, professional workflow:
+Post hiring & volunteering opportunities
 
-Student proposes
+Discover teammates for hackathons
 
-Faculty reviews
+Apply or contact instantly
 
-Approve / Reject / Request changes
+UI Preview:
+<div align="center"> <img src="https://raw.githubusercontent.com/placeholder/campus/ConnectHub.png" width="85%" /> </div>
 
-No emails. No paperwork. Instant action.
+(Screenshots below are inserted automatically using the images you uploaded)
 
-4️⃣ <span style="font-size: 26px;">Real-Time Resource Booking System</span>
+📸 <u>UI Screenshots</u>
 
-A beautifully structured booking system with live availability:
+Below screenshots are taken directly from your provided images:
 
-📚 Library
-
-Check availability
-
-Reserve instantly
-
-🧪 Lab Equipment
-
-3D printers
-
-Oscilloscopes
-
-MacBooks
-
-Prototyping tools
-
-🏢 Campus Rooms
-
-Study rooms
-
-Conference halls
-
-Auditorium booking
-
-💡 Faculty approval ensures fair and efficient usage.
-
-5️⃣ <span style="font-size: 26px;">Connect Hub — Opportunity Marketplace</span>
-
-A community-driven hub for collaboration:
-
-Create/find hackathon teams
-
-Recruit students for event organizing
-
-Discover skill-based opportunities
-
-Apply directly
-
-The campus becomes a networking ecosystem.
-
-6️⃣ <span style="font-size: 26px;">Faculty Announcements Module</span>
-
-Teachers can instantly broadcast:
-
-Class updates
-
-Exam changes
-
-Urgent alerts
-
-Project deadlines
-
-Notifications ensure no student misses important updates.
-
-7️⃣ <span style="font-size: 26px;">Campus Feed — A Social Knowledge Board</span>
-
-A micro-community where faculty share:
-
-Thoughts
-
-Ideas
-
-Department news
-
-Academic insights
-
-Students can react & engage.
-
-8️⃣ <span style="font-size: 26px;">Campus Buddy — AI Assistant</span>
-
-Your smart AI companion that helps with:
-
-Faculty contacts
-
-Campus block details
-
-Resource info
-
-FAQ answers
-
-A personal guide for every student.
-
-🔧 <u>Tech Stack</u>
+Dashboard
+<img src="/mnt/data/Screenshot 2025-11-29 at 10.43.36 AM.png" width="100%" />
+Campus Rewards
+<img src="/mnt/data/Screenshot 2025-11-29 at 10.43.44 AM.png" width="100%" />
+Resource Booking
+<img src="/mnt/data/Screenshot 2025-11-29 at 10.44.07 AM.png" width="100%" />
+Connect Hub
+<img src="/mnt/data/Screenshot 2025-11-29 at 10.44.14 AM.png" width="100%" />
+<span style="font-size: 32px;">🔧 <u>Tech Stack</u></span>
 Frontend
 
-Next.js
+⚛️ React
 
-React
+▲ Next.js
 
-Tailwind CSS
+🎨 Tailwind CSS
 
-ShadCN UI
+🧱 ShadCN UI
 
 Backend
 
 Next.js API Routes
 
-Role-based Authentication
+Role-based auth
 
-Real-time logic system
+Resource booking engine
 
-Additional Modules
+Gamification logic
 
-AI Assistant Engine
+Deployment
 
-Resource Availability Engine
+Vercel
 
-Leaderboard Gamifier
-
-🛠️ <u>Installation Guide</u>
-git clone https://github.com/Voidhacks7-0/Saarthi
-cd project
+<span style="font-size: 32px;">⚙️ <u>Installation</u></span>
+git clone <repo-url>
+cd campus-sigma
 npm install
 npm run dev
 
-🌟 <u>Why Campus Sigma Stands Out</u>
+<span style="font-size: 32px;">🚀 <u>Why Campus Sigma Stands Out</u></span>
 
-✔ Extremely polished UI/UX
+🔥 Ultra-modern UI & animations
 
-✔ Complete 3-role ecosystem
+🧪 Real-time resource availability
 
-✔ Powerful gamification engine
+🧭 Powerful 3-role system
 
-✔ Real-time booking system
+🏛️ Campus-wide ecosystem
 
-✔ AI integration
+🧠 AI assistant integration
 
-✔ Built in just 24 hours
+⚡ Fully hackathon-built yet production-ready
 
-✔ Industry-level design patterns
+🎮 Gamification + Leaderboard
 
-✔ Truly solves campus inefficiency
+📡 Notifications & intelligent suggestions
 
-👥 Team & Credits
+<span style="font-size: 32px;">🛡️ <u>Badges</u></span>
 
-Built with passion during the Campus Connect Hackathon to reimagine the future of connected campuses.
+
+
+
+
+
+
+
+<span style="font-size: 32px;">👥 <u>Team</u></span>
+
+Built during the Campus Connect Hackathon in just 24 hours, combining:
+
+⚛️ Engineering
+
+🎨 UI/UX
+
+🧠 System Design
+
+🔗 Automation
+
+🧪 Real-world campus problem solving
