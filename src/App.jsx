@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Calendar, 
   BookOpen, 
@@ -31,7 +31,10 @@ import {
   Monitor,
   Printer,
   Armchair,
-  LayoutGrid
+  LayoutGrid,
+  Megaphone,
+  Bot, // Added Bot icon
+  Send // Added Send icon
 } from 'lucide-react';
 
 // --- MOCK DATA ---
@@ -66,6 +69,12 @@ const INITIAL_USERS = {
     notificationToken: 'token_a1'
   }
 };
+
+const INITIAL_ANNOUNCEMENTS = [
+  "Registration for the Annual Hackathon closes tonight at 11:59 PM!",
+  "The Central Library will remain open until 8 PM during exam week.",
+  "Guest lecture on AI Ethics in the Main Auditorium tomorrow at 2 PM."
+];
 
 const INITIAL_EVENTS = [
   { id: 101, title: 'Data Structures Lecture', time: '10:00 AM - 11:00 AM', type: 'class', location: 'Room 302', date: 'Today', description: 'Regular lecture', createdBy: 'admin', status: 'upcoming' },
@@ -225,6 +234,129 @@ const Notification = ({ message, onClose }) => (
   </div>
 );
 
+const AnnouncementBanner = ({ messages }) => (
+  <div className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/50 dark:to-amber-900/50 border-y border-orange-200 dark:border-orange-800 py-3 overflow-hidden relative flex items-center shadow-inner">
+    <style>{`
+      @keyframes marquee {
+        0% { transform: translateX(0%); }
+        100% { transform: translateX(-100%); }
+      }
+      .animate-marquee {
+        animation: marquee 30s linear infinite;
+      }
+      .animate-marquee:hover {
+        animation-play-state: paused;
+      }
+    `}</style>
+    
+    <div className="bg-orange-500 text-white px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest absolute left-0 z-10 flex items-center shadow-lg rounded-r-lg animate-pulse ml-0">
+       <Megaphone className="w-3 h-3 mr-2" /> Announcements
+    </div>
+    
+    <div className="flex w-full overflow-hidden">
+        <div className="animate-marquee whitespace-nowrap flex gap-12 text-sm font-semibold text-orange-800 dark:text-orange-200 pl-32 items-center">
+          {messages.map((msg, i) => (
+             <span key={i} className="flex items-center">
+               <span className="w-2 h-2 rounded-full bg-orange-500 mr-3"></span>
+               {msg}
+             </span>
+          ))}
+          {messages.map((msg, i) => (
+             <span key={`dup-${i}`} className="flex items-center">
+               <span className="w-2 h-2 rounded-full bg-orange-500 mr-3"></span>
+               {msg}
+             </span>
+          ))}
+        </div>
+    </div>
+  </div>
+);
+
+const ChatAssistant = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState([
+    { id: 1, text: "Hi there! I'm your Campus AI Assistant. How can I help you today?", sender: 'bot' }
+  ]);
+  const [input, setInput] = useState("");
+  const messagesEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleSend = (e) => {
+    e.preventDefault();
+    if (!input.trim()) return;
+
+    const userMsg = { id: Date.now(), text: input, sender: 'user' };
+    setMessages(prev => [...prev, userMsg]);
+    setInput("");
+
+    // Simulate AI response
+    setTimeout(() => {
+      let responseText = "I'm a demo bot. I can help you navigate the portal or answer basic questions.";
+      const lowerInput = input.toLowerCase();
+      
+      if (lowerInput.includes('event') || lowerInput.includes('hackathon')) {
+        responseText = "You can view upcoming events in the 'Dashboard' or submit new event requests in the 'My Requests' tab.";
+      } else if (lowerInput.includes('book') || lowerInput.includes('library')) {
+        responseText = "Head over to the 'Resource Booking' tab to check book availability and reserve items.";
+      } else if (lowerInput.includes('point') || lowerInput.includes('reward')) {
+        responseText = "You earn points by attending events and helping others! Check your progress in the 'Campus Rewards' section.";
+      }
+
+      setMessages(prev => [...prev, { id: Date.now() + 1, text: responseText, sender: 'bot' }]);
+    }, 1000);
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      {isOpen && (
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 w-80 h-96 mb-4 flex flex-col animate-fade-in overflow-hidden">
+          <div className="bg-indigo-600 p-4 flex justify-between items-center text-white">
+            <div className="flex items-center gap-2">
+              <Bot className="w-5 h-5" />
+              <span className="font-bold">Campus Assistant</span>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="hover:bg-indigo-700 p-1 rounded-full"><X className="w-4 h-4" /></button>
+          </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-slate-900">
+             {messages.map((msg) => (
+               <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                 <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white dark:bg-slate-700 dark:text-gray-200 text-gray-800 border border-gray-100 dark:border-slate-600 rounded-bl-none shadow-sm'}`}>
+                   {msg.text}
+                 </div>
+               </div>
+             ))}
+             <div ref={messagesEndRef} />
+          </div>
+          <form onSubmit={handleSend} className="p-3 bg-white dark:bg-slate-800 border-t border-gray-100 dark:border-slate-700 flex gap-2">
+             <input 
+               value={input}
+               onChange={(e) => setInput(e.target.value)}
+               placeholder="Type a message..." 
+               className="flex-1 text-sm bg-gray-50 dark:bg-slate-900 border-none rounded-full px-4 focus:ring-2 focus:ring-indigo-500 dark:text-white"
+             />
+             <button type="submit" className="p-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 shadow-sm transition-transform active:scale-95">
+               <Send className="w-4 h-4" />
+             </button>
+          </form>
+        </div>
+      )}
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className="bg-indigo-600 hover:bg-indigo-700 text-white p-4 rounded-full shadow-lg transition-transform hover:scale-110 active:scale-95 flex items-center justify-center group"
+      >
+        {isOpen ? <X className="w-6 h-6" /> : <Bot className="w-6 h-6 group-hover:animate-bounce" />}
+      </button>
+    </div>
+  );
+};
+
 export default function App() {
   const [allUsers, setAllUsers] = useState(INITIAL_USERS);
   const [user, setUser] = useState(null);
@@ -244,6 +376,7 @@ export default function App() {
   const [connectPosts, setConnectPosts] = useState(INITIAL_CONNECT_POSTS);
   const [events, setEvents] = useState(INITIAL_EVENTS);
   const [requests, setRequests] = useState(INITIAL_REQUESTS);
+  const [announcements, setAnnouncements] = useState(INITIAL_ANNOUNCEMENTS); // New State
   const [viewMode, setViewMode] = useState('list');
   const [redemptions, setRedemptions] = useState(INITIAL_REDEMPTIONS);
   const [showQR, setShowQR] = useState(false);
@@ -349,6 +482,15 @@ export default function App() {
     e.target.reset();
     showNotification('Post shared with campus!');
   };
+
+  const handleAnnouncementSubmit = (e) => {
+    e.preventDefault();
+    const text = e.target.elements.announcementText.value;
+    if (!text) return;
+    setAnnouncements([text, ...announcements]);
+    e.target.reset();
+    showNotification("Announcement broadcasted successfully!");
+  }
 
   const handleConnectPostSubmit = (e) => {
     e.preventDefault();
@@ -1024,6 +1166,9 @@ export default function App() {
     <div className={`min-h-screen transition-colors ${darkMode ? 'dark bg-slate-900' : 'bg-gray-50'}`}>
       {notification && <Notification message={notification} onClose={() => setNotification(null)} />}
       {showQR && <QRModal />}
+      
+      {/* ADDED: Chat Assistant Component */}
+      <ChatAssistant />
 
       {/* Mobile Header */}
       <div className="lg:hidden bg-white dark:bg-slate-800 p-4 shadow-sm flex items-center justify-between sticky top-0 z-40">
@@ -1064,7 +1209,7 @@ export default function App() {
         {isSidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setIsSidebarOpen(false)} />}
 
         <main className="flex-1 overflow-y-auto p-4 lg:p-8 relative">
-          <header className="hidden lg:flex justify-between items-center mb-8">
+          <header className="hidden lg:flex justify-between items-center mb-4">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
               {activeTab === 'home' && 'Dashboard'}
               {activeTab === 'gamification' && 'Campus Rewards & Points'}
@@ -1093,6 +1238,9 @@ export default function App() {
           <div className="max-w-6xl">
             {activeTab === 'home' && (
               <div className="space-y-6 animate-fade-in">
+                {/* Announcement Banner */}
+                <AnnouncementBanner messages={announcements} />
+
                 <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
                   <div className="relative z-10">
                     <h2 className="text-2xl font-bold mb-1">Welcome back, {user.name.split(' ')[0]}!</h2>
@@ -1107,6 +1255,20 @@ export default function App() {
                   </div>
                   <div className="absolute right-0 top-0 h-full w-1/3 bg-white/10 skew-x-12 transform translate-x-8"></div>
                 </div>
+
+                {/* FACULTY ONLY: Announcement Input */}
+                {user.role === 'Faculty' && (
+                  <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-indigo-100 dark:border-indigo-900 mb-6">
+                    <h3 className="font-bold text-gray-800 dark:text-white mb-3 flex items-center gap-2">
+                      <Megaphone className="w-5 h-5 text-indigo-500" /> Post Official Announcement
+                    </h3>
+                    <form onSubmit={handleAnnouncementSubmit} className="flex gap-2">
+                      <input name="announcementText" className="flex-1 p-3 rounded-lg border border-gray-200 dark:bg-slate-700 dark:border-slate-600 dark:text-white focus:ring-2 focus:ring-indigo-500" placeholder="Type urgent announcement here..." required />
+                      <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">Broadcast</button>
+                    </form>
+                  </div>
+                )}
+
                 {/* Standard Home Feed... (Simplified) */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                    <div className="lg:col-span-2 space-y-6">
